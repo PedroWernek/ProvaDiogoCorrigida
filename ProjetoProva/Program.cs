@@ -110,12 +110,17 @@ app.MapGet("api/folha/buscar/{cpf}/{mes}/{ano}", ([FromRoute] string cpf, [FromR
 
   if(funcionario == null)
   {
-    return Results.NotFound();
+    return Results.NotFound("Funcionário não encontrado");
   }
 
-  List<Folha> folhas = ctx.TabelaFolhas.Where(F => F.FuncionarioId == funcionario.funcionarioId).Where(a => a.Ano == ano).Where(m => m.Mes == mes).ToList();
+  Folha? folha = ctx.TabelaFolhas.Where(F => F.FuncionarioId == funcionario.funcionarioId).Where(a => a.Ano == ano).FirstOrDefault(m => m.Mes == mes);
 
-  return Results.Ok(folhas);
+  if(folha == null)
+  {
+    return Results.NotFound("Folha não encontrada");
+  }
+
+  return Results.Ok(folha);
 });
 
 app.Run();
